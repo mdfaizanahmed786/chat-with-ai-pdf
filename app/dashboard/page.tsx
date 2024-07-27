@@ -1,0 +1,14 @@
+import Documents from "@/components/Documents";
+import PlaceHolderDocument from "@/components/PlaceHolderDocument";
+
+function Dashboard() {
+  return (
+    <div className="h-full max-w-7xl mx-auto bg-gray-200 p-4 w-full">
+      <p className="font-extralight text-indigo-400 text-sm md:text-xl lg:text-2xl">My Documents</p>
+      {/* Will map through the documents here... */}
+      <Documents/>
+     
+    </div>
+  );
+}
+export default Dashboard;
