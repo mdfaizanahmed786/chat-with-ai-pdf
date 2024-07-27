@@ -1,5 +1,5 @@
+export const dynamic="force-dynamic"
 import PlaceHolderDocument from "./PlaceHolderDocument";
-
 function Documents() {
   return (
     <div>
