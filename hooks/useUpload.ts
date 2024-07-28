@@ -69,7 +69,7 @@ export function useUpload() {
             setStatus(StatusText.GENERATING)
             // AI Embeddings Generation
 
-            await generateEmbeddings(fileIdUploadTo)
+            // await generateEmbeddings(fileIdUploadTo)
             setFileId(fileIdUploadTo);
       
         }
