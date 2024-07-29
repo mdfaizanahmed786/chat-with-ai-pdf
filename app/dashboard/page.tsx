@@ -1,5 +1,4 @@
 import Documents from "@/components/Documents";
-import PlaceHolderDocument from "@/components/PlaceHolderDocument";
 
 function Dashboard() {
   return (
