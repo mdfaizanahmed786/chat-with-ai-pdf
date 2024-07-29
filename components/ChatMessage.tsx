@@ -8,9 +8,9 @@ function ChatMessage({ message }: { message: Message }) {
   const isHuman = message.role === "human";
   const { user } = useUser();
   return (
-    <div className={`flex ${isHuman ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${isHuman ? "justify-end" : "justify-start"} mb-2 p-5`}>
       {isHuman ? (
-        <div className="bg-blue-500 text-white p-2 m-2 rounded-lg">
+        <div className="flex items-center space-x-3 bg-indigo-500 text-white p-4 rounded-lg max-w-sm">
           {user?.imageUrl && (
             <Image
               src={user?.imageUrl}
@@ -20,13 +20,19 @@ function ChatMessage({ message }: { message: Message }) {
               className="rounded-full"
             />
           )}
-          <p>{user?.fullName}</p>
+          <div>
+            <p className="font-semibold">{user?.fullName}</p>
+            <Markdown className="mt-1">{message.message}</Markdown>
+          </div>
         </div>
       ) : (
-        <div className="bg-gray-300 text-black p-2 m-2 rounded-lg">AI</div>
+        <div className="flex items-center space-x-3 bg-gray-300 text-black p-4 rounded-lg max-w-sm">
+          <div className="bg-gray-400 p-2 rounded-full">
+            <span>AI</span>
+          </div>
+          <Markdown>{message.message}</Markdown>
+        </div>
       )}
-
-      <Markdown>{message.message}</Markdown>
     </div>
   );
 }
