@@ -9,7 +9,7 @@ async function Documents() {
   if(!userId) throw new Error("User not authenticated")
   const documents=await adminDb.collection("users").doc(userId!).collection("files").get()
   return (
-    <div>
+    <div className="flex gap-4 mt-3 w-full flex-wrap">
       {/* Will map through the documents here  */}
  
  {
@@ -17,15 +17,13 @@ async function Documents() {
       const {name, size, downloadUrl}=doc.data();
       return (
         <div key={doc.id} className="flex justify-center">
-          <Document key={doc.id} name={name} size={size} downloadUrl={downloadUrl}/>
+          <Document key={doc.id} id={doc.id} name={name} size={size} downloadUrl={downloadUrl}/>
         </div>
       )
 
  }
   )
 }
-  
-
       <div className="flex justify-center">
 
       <PlaceHolderDocument />

@@ -5,13 +5,16 @@ import {FileUp} from "lucide-react"
 
 function Header() {
   return (
-    <nav className="flex justify-between items-center shadow-sm border-b p-2">
+    <nav className="flex justify-between items-center shadow-sm border-b sticky top-0 p-2">
       <Link href="/dashboard">
         Chat With <span className="text-indigo-600 font-semibold">PDF</span>
       </Link>
       <div className="flex gap-3">
       <SignedIn>
         <div className="flex gap-2">
+        <Button asChild variant="outline">
+        <Link href="/dashboard/" className="border-indigo-500 text-indigo-600">My Documents</Link>
+         </Button>
         <Button asChild variant="outline">
         <Link href="/dashboard/upgrade" className="border-indigo-500 text-indigo-600">Pricing</Link>
          </Button>
