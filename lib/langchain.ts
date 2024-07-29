@@ -181,29 +181,55 @@ export async function generateLangChainCompletion(
   ]);
 
   console.log("----Creating a history aware retriever chain----");
-//   Constructs a retriever chain that utilizes the prompt template to generate relevant search queries based on the conversation context. This ensures that the queries are contextually aware and tailored to the ongoing conversation.
+  //   Constructs a retriever chain that utilizes the prompt template to generate relevant search queries based on the conversation context. This ensures that the queries are contextually aware and tailored to the ongoing conversation.
 
-// Example Workflow
-// User Sends a Message: The user inputs a message, which is added to the conversation history.
-// Prompt Generation: The prompt template combines the conversation history with the instruction to generate a search query.
-// Query Generation: The language model processes the prompt to generate a relevant search query.
-// Retrieval: The history-aware retriever uses the generated query to fetch relevant information from the data source (e.g., Pinecone index).
+  // Example Workflow
+  // User Sends a Message: The user inputs a message, which is added to the conversation history.
+  // Prompt Generation: The prompt template combines the conversation history with the instruction to generate a search query.
+  // Query Generation: The language model processes the prompt to generate a relevant search query.
+  // Retrieval: The history-aware retriever uses the generated query to fetch relevant information from the data source (e.g., Pinecone index).
 
-
-
-  const historyAwareRetriever = createHistoryAwareRetriever({
+  const historyAwareRetrieverChain = await createHistoryAwareRetriever({
     llm: model,
     retriever,
     rephrasePrompt: historyAwareTemplate,
-
   });
 
+  //   Define the prompt template for answering the questions
+  const historyAwareRetrievalPrompt = ChatPromptTemplate.fromMessages([
+    [
+      "system",
+      "Answer the user's question based on the below context {context}",
+    ],
+    ...chatHistory,
+    ["user", "{input}"],
+  ]);
 
-//   Define the prompt template for answering the questions
-    const questionPrompt = ChatPromptTemplate.fromMessages([
-        ...chatHistory,
-        ["system", "Answer the user's question based on the below context {context}"],
-    ]);
-    
-    console.log("----Creating a retrieval chain----");
+  // Creating a document combining chain
+  console.log("----Creating a document combining chain----");
+  const historyAwareDocCombiningChain = await createStuffDocumentsChain({
+    llm: model,
+    prompt: historyAwareRetrievalPrompt,
+  });
+
+  // Combining the retriever and the document combining chain
+  console.log(
+    "----Combining the retriever and the document combining chain forming a main chain----"
+  );
+  const conversationRetrieverChain = await createRetrievalChain({
+    retriever: historyAwareRetrieverChain,
+    combineDocsChain: historyAwareDocCombiningChain,
+  });
+
+    // Generate the completion with
+
+    console.log("----Running the chain with a sample conversation-----")
+    const reply=await conversationRetrieverChain.invoke({
+        chat_history:chatHistory,
+        input:question
+    })
+
+    console.log(`Reply: ${reply.answer}`)
+
+    return reply.answer
 }
