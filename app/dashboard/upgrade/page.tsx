@@ -1,4 +1,5 @@
 "use client";
+import { createCheckoutSession } from "@/actions/createCheckoutSession";
 import { Button } from "@/components/ui/button";
 import useSubscription from "@/hooks/useSubscription";
 import getStripe from "@/lib/stripe-js";
@@ -28,6 +29,11 @@ function PricingPage() {
         // Create stripe portal
         // What is portal? It is a way to manage subscription
       }
+      const sessionId=await createCheckoutSession(userDetails);
+
+      await stripe?.redirectToCheckout({
+        sessionId,
+      });
     });
   };
   return (
