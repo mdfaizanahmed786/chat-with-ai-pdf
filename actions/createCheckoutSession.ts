@@ -32,6 +32,7 @@ export async function createCheckoutSession(userDetails: UserDetails) {
     };
 
     // 4000003560000008: use this one
+    console.log(userDetails, "DDJDJJDJ")
     const newCustomer = await stripe.customers.create({
       name: userDetails.name, 
       email: userDetails.email,
@@ -53,6 +54,8 @@ export async function createCheckoutSession(userDetails: UserDetails) {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     currency:"inr",
+   customer: stripeCustomerId,
+
     
     line_items: [
       {
