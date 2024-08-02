@@ -1,10 +1,13 @@
 "use client";
 import { createCheckoutSession } from "@/actions/createCheckoutSession";
+import { createStripePortal } from "@/actions/createStripePortal";
 import { Button } from "@/components/ui/button";
 import useSubscription from "@/hooks/useSubscription";
 import getStripe from "@/lib/stripe-js";
 import { useUser } from "@clerk/nextjs";
 import { CheckIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 import { useTransition } from "react";
 
 export type UserDetails = {
@@ -16,6 +19,7 @@ function PricingPage() {
   const { user } = useUser();
   const { hasActiveMembership, loading } = useSubscription();
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const handleUpgrade = () => {
     if (!user) return;
     const userDetails: UserDetails = {
@@ -28,8 +32,12 @@ function PricingPage() {
       if (hasActiveMembership) {
         // Create stripe portal
         // What is portal? It is a way to manage subscription
+        const stripeURL = await createStripePortal();
+
+      return router.push(stripeURL);
+       
       }
-      const sessionId=await createCheckoutSession(userDetails);
+      const sessionId = await createCheckoutSession(userDetails);
 
       await stripe?.redirectToCheckout({
         sessionId,
