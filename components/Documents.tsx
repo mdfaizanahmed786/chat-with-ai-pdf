@@ -14,10 +14,11 @@ async function Documents() {
  
  {
     documents.docs.map((doc)=>{
-      const {name, size, downloadUrl}=doc.data();
+      const {name, size, downloadURL}=doc.data();
+    
       return (
         <div key={doc.id} className="flex justify-center">
-          <Document key={doc.id} id={doc.id} name={name} size={size} downloadUrl={downloadUrl}/>
+          <Document key={doc.id} id={doc.id} name={name} size={size} downloadUrl={downloadURL}/>
         </div>
       )
 
