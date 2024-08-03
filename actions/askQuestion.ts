@@ -4,7 +4,8 @@ import { Message } from "@/components/Chat";
 import { adminDb } from "@/firebaseAdmin";
 import { generateLangChainCompletion } from "@/lib/langchain";
 import { auth } from "@clerk/nextjs/server";
-
+ const PRO_LIMIT=20;
+  const FREE_LIMIT=2;
 
 export async function askQuestion(id: string, question: string) {
   auth().protect();
@@ -22,6 +23,28 @@ export async function askQuestion(id: string, question: string) {
     (doc) => doc.data().role === "human"
   );
 
+  const userRef=await adminDb.collection("users").doc(userId!).get()
+  if(!userRef.data()?.hasActiveMembership){
+    if(userMessages.length>=FREE_LIMIT){
+        return{
+            message:"You have reached the limit of questions you can ask without an active membership",
+            success:false
+        }
+    }
+  }
+
+  if(userRef.data()?.hasActiveMembership){
+    if(userMessages.length>=PRO_LIMIT){
+        return{
+            message:"You have reached the limit of questions you can ask with an active membership",
+            success:false
+        }
+    }
+  }
+
+
+
+
   const userMessage: Message = {
     message: question,
     role: "human",
@@ -36,15 +59,15 @@ export async function askQuestion(id: string, question: string) {
 
 //   Generate ai response
 
-const reply=await generateLangChainCompletion(id, question)
+// const reply=await generateLangChainCompletion(id, question)
 
-const aiMessage:Message={
-    message:reply,
-    role:"ai",
-    createdAt:new Date()
-}
+// const aiMessage:Message={
+//     message:reply,
+//     role:"ai",
+//     createdAt:new Date()
+// }
 
-await chatRef.add(aiMessage)
+// await chatRef.add(aiMessage)
 
 
   return {
