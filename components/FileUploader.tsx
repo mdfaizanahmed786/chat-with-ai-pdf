@@ -1,4 +1,5 @@
 "use client";
+import useSubscription from "@/hooks/useSubscription";
 import { useUpload } from "@/hooks/useUpload";
 import { CircleArrowDown, RocketIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -7,6 +8,7 @@ import { useDropzone } from "react-dropzone";
 
 function FileUploader() {
   const { progress, handleFileUpload, status, fileId } = useUpload();
+  const { isOverFileLimit, filesLoading } = useSubscription();
   const router = useRouter();
 
   useEffect(() => {
@@ -14,14 +16,25 @@ function FileUploader() {
       router.push(`/dashboard/files/${fileId}`);
     }
   }, [fileId]);
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      await handleFileUpload(file);
-    } else {
-      console.log("No file");
-    }
-  }, [handleFileUpload]);
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+
+      if (isOverFileLimit && !filesLoading) {
+        alert(
+          "You have reached the file limit. Please upgrade to add more files"
+        );
+        router.push("/dashboard/upgrade");
+        return;
+      } else {
+        if (file) await handleFileUpload(file);
+        else {
+          console.log("No file");
+        }
+      }
+    },
+    [handleFileUpload]
+  );
   const { getRootProps, getInputProps, isDragActive, isFocused, isDragAccept } =
     useDropzone({
       onDrop,
@@ -50,8 +63,6 @@ function FileUploader() {
           </div>
         </div>
       )}
-
-
 
       <div
         {...getRootProps()}
